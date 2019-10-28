@@ -1,2 +1,2 @@
 # smartbike
-An expat-friendly YouBike app
+An expat-friendly Taipei YouBike app
