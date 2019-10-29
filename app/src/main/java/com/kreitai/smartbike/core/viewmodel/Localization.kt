@@ -22,28 +22,9 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.state
+package com.kreitai.smartbike.core.viewmodel
 
-import com.kreitai.smartbike.core.remote.model.Station
-import java.io.Serializable
-import java.util.*
-
-data class AppState(
-    val isLoading: Boolean = false,
-    val stations: List<Station>? = emptyList(),
-    val error: String? = null,
-    val localization: Locale
-) : Serializable {
-
-    companion object {
-        fun getInitialState(): AppState {
-            return AppState(
-                isLoading = true,
-                stations = emptyList(),
-                //TODO introduce sealed class to get rid of disambiguation between null and empty
-                error = null,
-                localization = Locale.getDefault()
-            )
-        }
-    }
+interface Localization {
+    fun localizeStationName(englishName: String, mandarinName: String): String
+    fun localize(resId: Int, vararg args: Any?): String
 }

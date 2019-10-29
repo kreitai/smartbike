@@ -22,28 +22,25 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.state
+package com.kreitai.smartbike.core.viewmodel
 
-import com.kreitai.smartbike.core.remote.model.Station
-import java.io.Serializable
+import android.content.res.Resources
+import com.kreitai.smartbike.core.state.StateHolder
 import java.util.*
 
-data class AppState(
-    val isLoading: Boolean = false,
-    val stations: List<Station>? = emptyList(),
-    val error: String? = null,
-    val localization: Locale
-) : Serializable {
+class LocalizationImpl(stateHolder: StateHolder, val resources: Resources) : Localization {
 
-    companion object {
-        fun getInitialState(): AppState {
-            return AppState(
-                isLoading = true,
-                stations = emptyList(),
-                //TODO introduce sealed class to get rid of disambiguation between null and empty
-                error = null,
-                localization = Locale.getDefault()
-            )
+    private val appState = stateHolder.getAppState()
+
+    override fun localize(resId: Int, vararg args: Any?): String {
+        return String.format(resources.getString(resId), *args)
+    }
+
+    override fun localizeStationName(englishName: String, mandarinName: String): String {
+        return when (appState.value?.localization?.language) {
+            Locale.TAIWAN.language -> mandarinName
+            else -> englishName
         }
     }
+
 }

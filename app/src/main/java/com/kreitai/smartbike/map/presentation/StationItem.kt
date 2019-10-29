@@ -25,8 +25,13 @@
 package com.kreitai.smartbike.map.presentation
 
 data class StationItem(
-    val cityTo: String,
-    val description: String,
+    val name: String,
     val latitude: Double,
-    val longitude: Double
-)
+    val longitude: Double,
+    val availableBikes: String,
+    val state: StationState
+) {
+    enum class StationState {
+        MANY, LOW, EMPTY
+    }
+}

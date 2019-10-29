@@ -35,9 +35,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.kreitai.smartbike.core.view.BaseFragment
 import com.kreitai.smartbike.databinding.FragmentStationMapBinding
 import com.kreitai.smartbike.map.ext.toBitmapDescriptor
+import com.kreitai.smartbike.map.presentation.StationItem
 import com.kreitai.smartbike.map.presentation.StationMapVm
 import kotlinx.android.synthetic.main.fragment_station_map.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class StationMapFragment :
@@ -58,7 +60,7 @@ class StationMapFragment :
     override val layoutResource: Int
         get() = com.kreitai.smartbike.R.layout.fragment_station_map
 
-    private val stationMapVm by viewModel<StationMapVm>()
+    private val stationMapVm by viewModel<StationMapVm> { parametersOf(resources) }
 
     override fun bindViewModel(
         viewBinding: FragmentStationMapBinding,
@@ -81,19 +83,24 @@ class StationMapFragment :
 
                 stationsViewState.stations?.let { stationItems ->
                     for (station in stationItems) {
+                        val bikeIcon = when (station.state) {
+                            StationItem.StationState.MANY -> com.kreitai.smartbike.R.drawable.ic_bike
+                            StationItem.StationState.LOW -> com.kreitai.smartbike.R.drawable.ic_bike_low
+                            StationItem.StationState.EMPTY -> com.kreitai.smartbike.R.drawable.ic_bike_empty
+                        }
                         googleMap?.addMarker(
                             MarkerOptions().position(
                                 LatLng(
                                     station.latitude,
                                     station.longitude
                                 )
-                            ).title("Marker in Taipei").icon(
+                            ).title(station.name).icon(
                                 context?.let {
-                                    com.kreitai.smartbike.R.drawable.ic_bike.toBitmapDescriptor(
+                                    bikeIcon.toBitmapDescriptor(
                                         it
                                     )
                                 }
-                            )
+                            ).snippet(station.availableBikes)
                         )
                     }
                 }

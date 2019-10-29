@@ -24,27 +24,36 @@
 
 package com.kreitai.smartbike.map.presentation
 
+import com.kreitai.smartbike.R
 import com.kreitai.smartbike.core.dispatcher.StationsDispatcher
 import com.kreitai.smartbike.core.domain.action.StationsAction
 import com.kreitai.smartbike.core.state.AppState
 import com.kreitai.smartbike.core.state.StateHolder
 import com.kreitai.smartbike.core.view.StationsViewState
+import com.kreitai.smartbike.core.viewmodel.Localization
 import com.kreitai.smartbike.core.viewmodel.SmartBikeViewModel
 
-class StationMapVm(stateHolder: StateHolder, dispatcher: StationsDispatcher) :
+class StationMapVm(
+    stateHolder: StateHolder,
+    dispatcher: StationsDispatcher,
+    private val localization: Localization
+) :
     SmartBikeViewModel(stateHolder, dispatcher) {
-
 
     override fun preRender(appState: AppState): StationsViewState? {
         return StationsViewState(
             appState.isLoading,
             appState.stations?.filter { station -> station.latitude != null && station.longitude != null }?.map {
                 StationItem(
-                    it.englishName,
-                    //TODO inject localization
-                    "From ${it.mandarinName} for ${it.availableSpaces}",
+                    localization.localizeStationName(it.englishName, it.mandarinName),
                     it.latitude ?: 0.0,
-                    it.longitude ?: 0.0
+                    it.longitude ?: 0.0,
+                    localization.localize(R.string.available_bikes, it.availableSpaces),
+                    when (it.ratio) {
+                        0.0 -> StationItem.StationState.EMPTY
+                        in 0.0..0.1 -> StationItem.StationState.LOW
+                        else -> StationItem.StationState.MANY
+                    }
                 )
             },
             error = if (!appState.isLoading && appState.stations.isNullOrEmpty()) "No more unique stations!" else null

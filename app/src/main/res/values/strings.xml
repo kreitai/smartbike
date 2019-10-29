@@ -29,4 +29,5 @@
 
     <string name="general_error_dialog_title">An error has occurred</string>
     <string name="general_error_dialog_button">Try again</string>
+    <string name="available_bikes">Available: %1$s</string>
 </resources>

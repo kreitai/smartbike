@@ -24,12 +24,22 @@
 
 package com.kreitai.smartbike.core.injection
 
+import android.content.res.Resources
+import com.kreitai.smartbike.core.viewmodel.Localization
+import com.kreitai.smartbike.core.viewmodel.LocalizationImpl
 import com.kreitai.smartbike.map.presentation.StationMapVm
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val presentationModule = module {
 
-    viewModel { StationMapVm(get(), get()) }
+    single { (resources: Resources) -> LocalizationImpl(get(), resources) as Localization }
+    viewModel { (resources: Resources) ->
+        StationMapVm(
+            get(),
+            get(),
+            get { parametersOf(resources) })
+    }
 
 }

@@ -33,13 +33,17 @@ data class Station(
     val longitude: Double?,
     @SerializedName("available_spaces")
     val availableSpaces: Int?,
+    @SerializedName("empty_spaces")
+    val emptySpaces: Int?,
     @SerializedName("name_tw")
     val mandarinName: String,
     @SerializedName("name_en")
     val englishName: String,
     @SerializedName("img")
     val image: String
-)
+) {
+    val ratio get() = (this.availableSpaces?.div((this.emptySpaces ?: 1).toDouble())) as Double
+}
 /*{
          "country_code":"00",
          "area_code":"00",
