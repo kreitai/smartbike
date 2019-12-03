@@ -22,16 +22,42 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.dispatcher
+package com.kreitai.smartbike.core.state
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.kreitai.smartbike.core.domain.StationsResult
-import com.kreitai.smartbike.core.domain.action.StationsAction
 
-interface StationsDispatcher {
+class ReducerImpl : Reducer {
 
-    fun dispatchedActionResult(action: StationsAction): LiveData<StationsResult>
-    fun retryLastAction()
-    val nextAction: MutableLiveData<StationsAction>
+    override fun reduce(
+        previousState: LiveData<AppState>,
+        actionResult: LiveData<StationsResult>
+    ): LiveData<AppState> {
+        return Transformations.map(actionResult) { stationsResult ->
+            val appState = previousState.value
+            return@map when (stationsResult) {
+                is StationsResult.Success -> {
+                    appState?.copy(
+                        isLoading = false,
+                        stations = stationsResult.data,
+                        error = null
+                    )
+                }
+                is StationsResult.Failure -> appState?.copy(
+                    isLoading = false,
+                    error = stationsResult.error,
+                    stations = emptyList()
+                )
+                is StationsResult.Loading -> {
+                    appState?.copy(
+                        isLoading = true,
+                        stations = emptyList(),
+                        error = null
+                    )
+                }
+            }
+        }
+    }
+
 }

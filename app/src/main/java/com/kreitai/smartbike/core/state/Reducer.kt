@@ -25,39 +25,12 @@
 package com.kreitai.smartbike.core.state
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.kreitai.smartbike.core.domain.StationsResult
 
-class Reducer {
+interface Reducer {
 
-    internal fun reduce(
+    fun reduce(
         previousState: LiveData<AppState>,
         actionResult: LiveData<StationsResult>
-    ): LiveData<AppState> {
-        return Transformations.map(actionResult) { stationsResult ->
-            val appState = previousState.value
-            return@map when (stationsResult) {
-                is StationsResult.Success -> {
-                    appState?.copy(
-                        isLoading = false,
-                        stations = stationsResult.data,
-                        error = null
-                    )
-                }
-                is StationsResult.Failure -> appState?.copy(
-                    isLoading = false,
-                    error = stationsResult.error,
-                    stations = emptyList()
-                )
-                is StationsResult.Loading -> {
-                    appState?.copy(
-                        isLoading = true,
-                        stations = emptyList(),
-                        error = null
-                    )
-                }
-            }
-        }
-    }
-
+    ): LiveData<AppState>
 }

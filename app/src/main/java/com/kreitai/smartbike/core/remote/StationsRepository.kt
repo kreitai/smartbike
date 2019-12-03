@@ -25,42 +25,8 @@
 package com.kreitai.smartbike.core.remote
 
 import com.kreitai.smartbike.core.domain.StationsResult
-import com.kreitai.smartbike.core.remote.model.Station
-import java.nio.charset.Charset
 
-class StationsRepository constructor(private val serviceProvider: ServiceProvider) {
+interface StationsRepository {
 
-    suspend fun getStations(): StationsResult {
-        abortFetch()
-        val response = doGetStations()
-        return if (response is NetworkResult.Success) {
-            StationsResult.Success(response.data)
-        } else {
-            StationsResult.Failure(response.toString())
-        }
-    }
-
-    private suspend fun doGetStations(): NetworkResult<List<Station>?> {
-        val response = serviceProvider.service.getStationsAsync("en").await()
-        if (response.isSuccessful) {
-            val stationsResponse = response.body()
-            val data = stationsResponse?.stations
-            return if (data.isNullOrEmpty()) {
-                NetworkResult.Failure(
-                    "Failed to retrieve result."
-                )
-            } else {
-                NetworkResult.Success(data)
-            }
-        } else {
-            return NetworkResult.Failure(
-                response.errorBody()?.bytes()?.toString(Charset.forName("UTF-8"))
-                    ?: "Failed to retrieve result."
-            )
-        }
-    }
-
-    private fun abortFetch() {
-        serviceProvider.cancelAllRequests()
-    }
+    suspend fun getStations(): StationsResult
 }

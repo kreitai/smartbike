@@ -22,27 +22,37 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.injection
+package com.kreitai.smartbike.core.state
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.kreitai.smartbike.core.remote.ServiceProvider
-import com.kreitai.smartbike.core.remote.ServiceProviderImpl
-import com.kreitai.smartbike.core.remote.StationsRepository
-import com.kreitai.smartbike.core.remote.StationsRepositoryImpl
-import okhttp3.Dispatcher
-import org.koin.dsl.module
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Transformations
+import com.kreitai.smartbike.core.dispatcher.StationsDispatcher
 
-val remoteModule = module {
+class StateHolderImpl(private val dispatcher: StationsDispatcher, private val reducer: Reducer) :
+    StateHolder {
 
-    single {
-        GsonBuilder()
-            .setLenient()
-            .disableHtmlEscaping()
-            .create() as Gson
+    private val appState = MediatorLiveData<AppState>().also {
+        it.postValue(AppState.getInitialState())
     }
-    single { ServiceProviderImpl(get(), get()) as ServiceProvider }
-    single { StationsRepositoryImpl(get()) as StationsRepository }
-    single { Dispatcher() }
+
+    override fun getAppState(): LiveData<AppState> {
+        return appState
+    }
+
+    init {
+        appState.addSource(Transformations.switchMap(dispatcher.nextAction) {
+            reducer.reduce(
+                appState,
+                dispatcher.dispatchedActionResult(it)
+            )
+        }) {
+            appState.value = it
+        }
+    }
+
+    override fun resetState() {
+        appState.value = AppState.getInitialState()
+    }
 
 }

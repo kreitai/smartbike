@@ -25,13 +25,16 @@
 package com.kreitai.smartbike.core.injection
 
 import com.kreitai.smartbike.core.dispatcher.StationsDispatcher
+import com.kreitai.smartbike.core.dispatcher.StationsDispatcherImpl
 import com.kreitai.smartbike.core.state.Reducer
+import com.kreitai.smartbike.core.state.ReducerImpl
 import com.kreitai.smartbike.core.state.StateHolder
+import com.kreitai.smartbike.core.state.StateHolderImpl
 import org.koin.dsl.module
 
 val stateModule = module {
 
-    single { StationsDispatcher(get()) }
-    single { Reducer() }
-    single { StateHolder(get(), get()) }
+    single { StationsDispatcherImpl(get()) as StationsDispatcher }
+    single { ReducerImpl() as Reducer }
+    single { StateHolderImpl(get(), get()) as StateHolder }
 }

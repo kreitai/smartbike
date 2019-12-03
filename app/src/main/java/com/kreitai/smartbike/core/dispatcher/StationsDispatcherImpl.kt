@@ -22,27 +22,34 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.injection
+package com.kreitai.smartbike.core.dispatcher
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.kreitai.smartbike.core.remote.ServiceProvider
-import com.kreitai.smartbike.core.remote.ServiceProviderImpl
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import com.kreitai.smartbike.core.domain.StationsResult
+import com.kreitai.smartbike.core.domain.action.StationsAction
 import com.kreitai.smartbike.core.remote.StationsRepository
-import com.kreitai.smartbike.core.remote.StationsRepositoryImpl
-import okhttp3.Dispatcher
-import org.koin.dsl.module
 
-val remoteModule = module {
+class StationsDispatcherImpl(private val repository: StationsRepository) : StationsDispatcher {
 
-    single {
-        GsonBuilder()
-            .setLenient()
-            .disableHtmlEscaping()
-            .create() as Gson
+    private var lastAction: StationsAction? = null
+
+    override val nextAction = MutableLiveData<StationsAction>()
+
+    override fun dispatchedActionResult(action: StationsAction) = liveData {
+        lastAction = action
+        when (action) {
+            is StationsAction.GetStationsAction -> {
+                emit(StationsResult.Loading)
+                emit(
+                    repository.getStations()
+                )
+            }
+        }
     }
-    single { ServiceProviderImpl(get(), get()) as ServiceProvider }
-    single { StationsRepositoryImpl(get()) as StationsRepository }
-    single { Dispatcher() }
+
+    override fun retryLastAction() {
+        lastAction?.let { nextAction.value = it }
+    }
 
 }
