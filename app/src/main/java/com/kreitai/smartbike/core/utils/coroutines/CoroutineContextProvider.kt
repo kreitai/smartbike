@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.view
+package com.kreitai.smartbike.core.utils.coroutines
 
-import com.kreitai.smartbike.map.presentation.StationItem
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 
-data class StationsViewState(
-    val loading: Boolean,
-    val stations: List<StationItem>?,
-    override var error: String? = null
-) : BaseViewState()
+open class CoroutineContextProvider {
+    open val Main: CoroutineContext by lazy { Dispatchers.Main }
+    open val IO: CoroutineContext by lazy { Dispatchers.IO }
+}

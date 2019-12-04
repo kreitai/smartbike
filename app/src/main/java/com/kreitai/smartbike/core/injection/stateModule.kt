@@ -30,11 +30,13 @@ import com.kreitai.smartbike.core.state.Reducer
 import com.kreitai.smartbike.core.state.ReducerImpl
 import com.kreitai.smartbike.core.state.StateHolder
 import com.kreitai.smartbike.core.state.StateHolderImpl
+import com.kreitai.smartbike.core.utils.coroutines.CoroutineContextProvider
 import org.koin.dsl.module
 
 val stateModule = module {
 
-    single { StationsDispatcherImpl(get()) as StationsDispatcher }
+    single { CoroutineContextProvider() }
+    single { StationsDispatcherImpl(get(), get()) as StationsDispatcher }
     single { ReducerImpl() as Reducer }
     single { StateHolderImpl(get(), get()) as StateHolder }
 }

@@ -22,12 +22,27 @@
  * SOFTWARE.
  */
 
-package com.kreitai.smartbike.core.view
+package com.kreitai.smartbike.core
 
-import com.kreitai.smartbike.map.presentation.StationItem
+import com.kreitai.smartbike.core.dispatcher.StationsDispatcherImpl
+import com.kreitai.smartbike.core.domain.StationsResult
+import com.kreitai.smartbike.core.remote.StationsRepository
+import com.kreitai.smartbike.core.state.ReducerImpl
+import com.kreitai.smartbike.core.state.StateHolderImpl
+import com.kreitai.smartbike.core.viewmodel.Localization
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 
-data class StationsViewState(
-    val loading: Boolean,
-    val stations: List<StationItem>?,
-    override var error: String? = null
-) : BaseViewState()
+open class MviTest {
+
+    private val testContextProvider = TestContextProvider()
+    protected val mockLocalization: Localization = mock {}
+    protected val mockStationsRepository: StationsRepository = mock {
+        onBlocking { getStations() }.doReturn(StationsResult.Success(emptyList()))
+    }
+
+    protected val dispatcher = StationsDispatcherImpl(mockStationsRepository, testContextProvider)
+    protected val reducer = ReducerImpl()
+    protected val stateHolder = StateHolderImpl(dispatcher, reducer)
+
+}

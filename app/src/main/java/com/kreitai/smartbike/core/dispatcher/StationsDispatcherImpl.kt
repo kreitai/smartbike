@@ -29,14 +29,19 @@ import androidx.lifecycle.liveData
 import com.kreitai.smartbike.core.domain.StationsResult
 import com.kreitai.smartbike.core.domain.action.StationsAction
 import com.kreitai.smartbike.core.remote.StationsRepository
+import com.kreitai.smartbike.core.utils.coroutines.CoroutineContextProvider
 
-class StationsDispatcherImpl(private val repository: StationsRepository) : StationsDispatcher {
+class StationsDispatcherImpl(
+    private val repository: StationsRepository,
+    private val contextProvider: CoroutineContextProvider
+) : StationsDispatcher {
 
     private var lastAction: StationsAction? = null
 
     override val nextAction = MutableLiveData<StationsAction>()
 
-    override fun dispatchedActionResult(action: StationsAction) = liveData {
+    override fun dispatchedActionResult(action: StationsAction) =
+        liveData(context = contextProvider.IO) {
         lastAction = action
         when (action) {
             is StationsAction.GetStationsAction -> {
