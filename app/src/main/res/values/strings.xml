@@ -23,7 +23,10 @@
   -->
 
 <resources>
-    <string name="app_name">FlyHi</string>
+
+    <string name="google_maps_key" translatable="false">dummy</string>
+
+    <string name="app_name">SmartBike</string>
 
     <string name="stations_title">Stations</string>
 
