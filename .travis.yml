@@ -15,4 +15,4 @@ before_install:
   - chmod +x gradlew
 script: ./gradlew build testDebugUnitTestCoverage
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -f file:///home/travis/build/kreitai/smartbike/app/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
+  - bash <(curl -s https://codecov.io/bash)
