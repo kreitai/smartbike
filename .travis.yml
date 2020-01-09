@@ -14,7 +14,7 @@ android:
 before_install:
   - chmod +x gradlew
 script:
-  - ./gradlew build testDebugUnitTestCoverage
+  - ./gradlew build testCiUnitTestCoverage
 after_success:
   - mv app/build/reports/jacoco/testDebugUnitTestCoverage app/build/reports/jacoco/jacocoTestDebugUnitTestReport
   - mv app/build/reports/jacoco/jacocoTestDebugUnitTestReport/testDebugUnitTestCoverage.xml app/build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml
