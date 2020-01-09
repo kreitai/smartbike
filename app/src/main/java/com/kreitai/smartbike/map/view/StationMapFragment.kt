@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -70,14 +71,17 @@ class StationMapFragment :
         viewBinding.vm = viewModel
     }
 
+    private lateinit var mapView: MapView
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var mapViewBundle: Bundle? = null
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
         }
-        map.onCreate(mapViewBundle)
-        map.getMapAsync(this)
+        mapView = map
+        mapView.onCreate(mapViewBundle)
+        mapView.getMapAsync(this)
         getViewModel().getRenderedState()
             .observe(viewLifecycleOwner, Observer { stationsViewState ->
 
@@ -127,37 +131,37 @@ class StationMapFragment :
             outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle)
         }
 
-        map.onSaveInstanceState(mapViewBundle)
+        mapView.onSaveInstanceState(mapViewBundle)
     }
 
     override fun onResume() {
         super.onResume()
-        map.onResume()
+        mapView.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        map.onStart()
+        mapView.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        map.onStop()
+        mapView.onStop()
     }
 
     override fun onPause() {
-        map.onPause()
+        mapView.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
-        map.onDestroy()
+        mapView.onDestroy()
         super.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        map.onLowMemory()
+        mapView.onLowMemory()
     }
 
 }
