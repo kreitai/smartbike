@@ -30,12 +30,12 @@
 
         <variable
             name="view"
-            type="com.kreitai.smartbike.map.view.StationMapFragment" />
+            type="com.kreitai.orangebikes.map.view.StationMapFragment" />
 
 
         <variable
             name="vm"
-            type="com.kreitai.smartbike.map.presentation.StationMapVm" />
+            type="com.kreitai.orangebikes.map.presentation.StationMapVm" />
 
     </data>
 

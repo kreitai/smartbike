@@ -25,7 +25,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.kreitai.smartbike">
+    package="com.kreitai.orangebikes">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -39,7 +39,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".core.SmartBikeApp"
+        android:name="com.kreitai.orangebikes.core.SmartBikeApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -61,7 +61,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".core.view.MainActivity"
+            android:name="com.kreitai.orangebikes.core.view.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

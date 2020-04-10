@@ -30,6 +30,6 @@
 
     <fragment
         android:id="@+id/stationsFragment"
-        android:name="com.kreitai.smartbike.map.view.StationMapFragment"
+        android:name="com.kreitai.orangebikes.map.view.StationMapFragment"
         android:label="StationsFragment" />
 </navigation>
