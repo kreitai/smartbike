@@ -26,7 +26,11 @@ package com.kreitai.orangebikes.map.view
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -63,6 +67,9 @@ class StationMapFragment :
         private const val LOCATION_PERMISSION_REQUEST_CODE = 999
     }
 
+    private var bikeBitmapMany: Bitmap? = null
+    private var bikeBitmapLow: Bitmap? = null
+    private var bikeBitmapEmpty: Bitmap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var permissionDenied: Boolean = false
     private var googleMap: GoogleMap? = null
@@ -92,6 +99,31 @@ class StationMapFragment :
 
         fusedLocationClient = LocationServices
             .getFusedLocationProviderClient(requireActivity())
+
+        bikeBitmapMany = getBitmap(R.drawable.ic_bike)
+        bikeBitmapLow = getBitmap(R.drawable.ic_bike_low)
+        bikeBitmapEmpty = getBitmap(R.drawable.ic_bike_empty)
+    }
+
+    private fun getBitmap(iconId: Int): Bitmap? {
+        val vectorDrawable: Drawable? =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                requireContext().getDrawable(iconId)
+            } else {
+                ContextCompat.getDrawable(requireContext(), iconId)
+            }
+        if (vectorDrawable != null) {
+            val w = vectorDrawable.intrinsicWidth
+            val h = vectorDrawable.intrinsicHeight
+
+            vectorDrawable.setBounds(0, 0, w, h)
+            val bm =
+                Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bm)
+            vectorDrawable.draw(canvas)
+            return bm
+        }
+        return null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,11 +139,15 @@ class StationMapFragment :
             .observe(viewLifecycleOwner, Observer { stationsViewState ->
 
                 stationsViewState.stations?.let { stationItems ->
+
+                    val bitmapDescriptorMany = bikeBitmapMany.toBitmapDescriptor()
+                    val bitmapDescriptorLow = bikeBitmapLow.toBitmapDescriptor()
+                    val bitmapDescriptorEmpty = bikeBitmapEmpty.toBitmapDescriptor()
                     for (station in stationItems) {
                         val bikeIcon = when (station.state) {
-                            StationItem.StationState.MANY -> com.kreitai.orangebikes.R.drawable.ic_bike
-                            StationItem.StationState.LOW -> com.kreitai.orangebikes.R.drawable.ic_bike_low
-                            StationItem.StationState.EMPTY -> com.kreitai.orangebikes.R.drawable.ic_bike_empty
+                            StationItem.StationState.MANY -> bitmapDescriptorMany
+                            StationItem.StationState.LOW -> bitmapDescriptorLow
+                            StationItem.StationState.EMPTY -> bitmapDescriptorEmpty
                         }
                         googleMap?.addMarker(
                             MarkerOptions().position(
@@ -119,13 +155,8 @@ class StationMapFragment :
                                     station.latitude,
                                     station.longitude
                                 )
-                            ).title(station.name).icon(
-                                context?.let {
-                                    bikeIcon.toBitmapDescriptor(
-                                        it
-                                    )
-                                }
-                            ).snippet(station.availableBikes)
+                            ).title(station.name).icon(bikeIcon)
+                                .snippet(station.availableBikes)
                         )
                     }
                 }

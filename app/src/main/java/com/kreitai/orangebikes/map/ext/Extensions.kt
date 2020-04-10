@@ -24,32 +24,10 @@
 
 package com.kreitai.orangebikes.map.ext
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
-fun Int.toBitmapDescriptor(context: Context): BitmapDescriptor? {
-    val vectorDrawable: Drawable? =
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            context.getDrawable(this)
-        } else {
-            ContextCompat.getDrawable(context, this)
-        }
-    if (vectorDrawable != null) {
-        val w = vectorDrawable.intrinsicWidth
-        val h = vectorDrawable.intrinsicHeight
-
-        vectorDrawable.setBounds(0, 0, w, h)
-        val bm =
-            Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bm)
-        vectorDrawable.draw(canvas)
-
-        return BitmapDescriptorFactory.fromBitmap(bm)
-    }
-    return null
+fun Bitmap?.toBitmapDescriptor(): BitmapDescriptor? {
+    return BitmapDescriptorFactory.fromBitmap(this)
 }

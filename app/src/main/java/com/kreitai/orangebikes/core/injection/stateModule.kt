@@ -24,8 +24,11 @@
 
 package com.kreitai.orangebikes.core.injection
 
+import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcherImpl
+import com.kreitai.orangebikes.core.state.Reducer
 import com.kreitai.orangebikes.core.state.ReducerImpl
+import com.kreitai.orangebikes.core.state.StateHolder
 import com.kreitai.orangebikes.core.state.StateHolderImpl
 import com.kreitai.orangebikes.core.utils.coroutines.CoroutineContextProvider
 import org.koin.dsl.module
@@ -33,7 +36,7 @@ import org.koin.dsl.module
 val stateModule = module {
 
     single { CoroutineContextProvider() }
-    single { StationsDispatcherImpl(get(), get()) }
-    single { ReducerImpl() }
-    single { StateHolderImpl(get(), get()) }
+    single { StationsDispatcherImpl(get(), get()) as StationsDispatcher }
+    single { ReducerImpl() as Reducer }
+    single { StateHolderImpl(get(), get()) as StateHolder }
 }

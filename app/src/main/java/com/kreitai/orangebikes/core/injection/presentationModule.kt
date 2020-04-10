@@ -25,6 +25,7 @@
 package com.kreitai.orangebikes.core.injection
 
 import android.content.res.Resources
+import com.kreitai.orangebikes.core.viewmodel.Localization
 import com.kreitai.orangebikes.core.viewmodel.LocalizationImpl
 import com.kreitai.orangebikes.map.presentation.StationMapVm
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -33,7 +34,7 @@ import org.koin.dsl.module
 
 val presentationModule = module {
 
-    single { (resources: Resources) -> LocalizationImpl(get(), resources) }
+    single { (resources: Resources) -> LocalizationImpl(get(), resources) as Localization }
     viewModel { (resources: Resources) ->
         StationMapVm(
             get(),

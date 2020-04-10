@@ -26,7 +26,9 @@ package com.kreitai.orangebikes.core.injection
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.kreitai.orangebikes.core.remote.ServiceProvider
 import com.kreitai.orangebikes.core.remote.ServiceProviderImpl
+import com.kreitai.orangebikes.core.remote.StationsRepository
 import com.kreitai.orangebikes.core.remote.StationsRepositoryImpl
 import okhttp3.Dispatcher
 import org.koin.dsl.module
@@ -39,8 +41,8 @@ val remoteModule = module {
             .disableHtmlEscaping()
             .create() as Gson
     }
-    single { ServiceProviderImpl(get(), get()) }
-    single { StationsRepositoryImpl(get()) }
+    single { ServiceProviderImpl(get(), get()) as ServiceProvider }
+    single { StationsRepositoryImpl(get()) as StationsRepository }
     single { Dispatcher() }
 
 }

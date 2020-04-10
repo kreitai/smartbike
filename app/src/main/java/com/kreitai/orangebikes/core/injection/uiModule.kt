@@ -25,11 +25,13 @@
 package com.kreitai.orangebikes.core.injection
 
 import androidx.fragment.app.Fragment
+import com.kreitai.orangebikes.core.utils.IntentManager
+import com.kreitai.orangebikes.core.view.DialogController
 import com.kreitai.orangebikes.core.view.DialogControllerImpl
 import com.kreitai.orangebikes.core.view.IntentManagerImpl
 import org.koin.dsl.module
 
 val uiModule = module {
-    factory { (fragment: Fragment) -> DialogControllerImpl(fragment) }
-    factory { (fragment: Fragment) -> IntentManagerImpl(fragment) }
+    factory { (fragment: Fragment) -> DialogControllerImpl(fragment) as DialogController }
+    factory { (fragment: Fragment) -> IntentManagerImpl(fragment) as IntentManager }
 }
