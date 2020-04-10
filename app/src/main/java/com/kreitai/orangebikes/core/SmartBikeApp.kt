@@ -26,6 +26,7 @@ package com.kreitai.orangebikes.core
 
 import androidx.multidex.BuildConfig
 import androidx.multidex.MultiDexApplication
+import com.google.android.gms.maps.MapsInitializer
 import com.kreitai.orangebikes.core.injection.presentationModule
 import com.kreitai.orangebikes.core.injection.remoteModule
 import com.kreitai.orangebikes.core.injection.stateModule
@@ -49,5 +50,6 @@ class SmartBikeApp : MultiDexApplication() {
             modules(listOf(remoteModule, stateModule, presentationModule, uiModule))
             logger(if (!BuildConfig.DEBUG) EmptyLogger() else AndroidLogger())
         }
+        MapsInitializer.initialize(this)
     }
 }
