@@ -100,9 +100,9 @@ class StationMapFragment :
         fusedLocationClient = LocationServices
             .getFusedLocationProviderClient(requireActivity())
 
-        bikeBitmapMany = getBitmap(R.drawable.ic_bike)
-        bikeBitmapLow = getBitmap(R.drawable.ic_bike_low)
-        bikeBitmapEmpty = getBitmap(R.drawable.ic_bike_empty)
+        bikeBitmapMany = getBitmap(R.drawable.ic_bike_round)
+        bikeBitmapLow = getBitmap(R.drawable.ic_bike_round_low)
+        bikeBitmapEmpty = getBitmap(R.drawable.ic_bike_round_empty)
     }
 
     private fun getBitmap(iconId: Int): Bitmap? {
