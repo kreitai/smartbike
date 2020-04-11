@@ -26,8 +26,8 @@ package com.kreitai.orangebikes.core.view
 
 import com.kreitai.orangebikes.map.presentation.StationItem
 
-data class StationsViewState(
+class StationsViewState(
     val loading: Boolean,
     val stations: List<StationItem>?,
-    override var error: String? = null
-) : BaseViewState()
+    error: String?
+) : BaseViewState(error)

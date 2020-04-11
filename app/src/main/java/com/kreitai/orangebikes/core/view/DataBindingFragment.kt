@@ -34,7 +34,7 @@ import androidx.fragment.app.Fragment
 import com.kreitai.orangebikes.core.utils.AutoClearedValue
 import com.kreitai.orangebikes.core.viewmodel.SmartBikeViewModel
 
-abstract class DataBindingFragment<VIEWMODEL : SmartBikeViewModel, VIEWBINDING : ViewDataBinding> :
+abstract class DataBindingFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : ViewDataBinding> :
     Fragment() {
 
     private lateinit var binding: AutoClearedValue<VIEWBINDING>

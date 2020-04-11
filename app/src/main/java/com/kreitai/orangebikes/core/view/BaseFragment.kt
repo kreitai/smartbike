@@ -39,7 +39,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
 
-abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel, VIEWBINDING : ViewDataBinding> :
+abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : ViewDataBinding> :
     DataBindingFragment<VIEWMODEL, VIEWBINDING>() {
 
     protected abstract val toolbarResId: Int
@@ -58,7 +58,7 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel, VIEWBINDING : ViewDa
             setupToolbar(toolbarShowBackButton)
         }
 
-        getViewModel().getRenderedState()
+        getViewModel().renderedState
             .observe(viewLifecycleOwner, Observer { stationsViewState ->
                 stationsViewState.error?.let {
                     dialogController.showMessage(

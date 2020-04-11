@@ -24,10 +24,11 @@
 
 package com.kreitai.orangebikes.map.presentation
 
+import com.google.android.gms.maps.model.LatLng
+
 data class StationItem(
     val name: String,
-    val latitude: Double,
-    val longitude: Double,
+    val latLng: LatLng,
     val availableBikes: String,
     val state: StationState
 ) {

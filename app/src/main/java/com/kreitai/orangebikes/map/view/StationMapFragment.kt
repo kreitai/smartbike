@@ -135,32 +135,37 @@ class StationMapFragment :
         mapView = map
         mapView.onCreate(mapViewBundle)
         mapView.getMapAsync(this)
-        getViewModel().getRenderedState()
+        getViewModel().renderedState
             .observe(viewLifecycleOwner, Observer { stationsViewState ->
 
                 stationsViewState.stations?.let { stationItems ->
-
-                    val bitmapDescriptorMany = bikeBitmapMany.toBitmapDescriptor()
-                    val bitmapDescriptorLow = bikeBitmapLow.toBitmapDescriptor()
-                    val bitmapDescriptorEmpty = bikeBitmapEmpty.toBitmapDescriptor()
-                    for (station in stationItems) {
-                        val bikeIcon = when (station.state) {
-                            StationItem.StationState.MANY -> bitmapDescriptorMany
-                            StationItem.StationState.LOW -> bitmapDescriptorLow
-                            StationItem.StationState.EMPTY -> bitmapDescriptorEmpty
-                        }
-                        googleMap?.addMarker(
-                            MarkerOptions().position(
-                                LatLng(
-                                    station.latitude,
-                                    station.longitude
-                                )
-                            ).title(station.name).icon(bikeIcon)
-                                .snippet(station.availableBikes)
-                        )
-                    }
+                    drawMarkers(stationItems)
                 }
             })
+    }
+
+    private fun drawMarkers(stationItems: List<StationItem>) {
+        val bitmapDescriptorMany = bikeBitmapMany.toBitmapDescriptor()
+        val bitmapDescriptorLow = bikeBitmapLow.toBitmapDescriptor()
+        val bitmapDescriptorEmpty = bikeBitmapEmpty.toBitmapDescriptor()
+        for (station in stationItems) {
+            val bikeIcon = when (station.state) {
+                StationItem.StationState.MANY -> bitmapDescriptorMany
+                StationItem.StationState.LOW -> bitmapDescriptorLow
+                StationItem.StationState.EMPTY -> bitmapDescriptorEmpty
+            }
+            if (googleMap?.projection?.visibleRegion?.latLngBounds?.contains(
+                    station.latLng
+                ) == true
+            ) {
+                googleMap?.addMarker(
+                    MarkerOptions().position(
+                        station.latLng
+                    ).title(station.name).icon(bikeIcon)
+                        .snippet(station.availableBikes)
+                )
+            }
+        }
     }
 
     override fun getViewModel(): StationMapVm {
@@ -169,6 +174,11 @@ class StationMapFragment :
 
     override fun onMapReady(googleMap: GoogleMap?) {
         this.googleMap = googleMap
+        googleMap?.setOnCameraIdleListener {
+            getViewModel().renderedState.value?.stations?.let { stationItems ->
+                drawMarkers(stationItems)
+            }
+        }
         enableMyLocation()
         getViewModel().fetchStations()
     }

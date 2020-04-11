@@ -24,29 +24,33 @@
 
 package com.kreitai.orangebikes.core.viewmodel
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
 import com.kreitai.orangebikes.core.state.AppState
 import com.kreitai.orangebikes.core.state.StateHolder
-import com.kreitai.orangebikes.core.view.StationsViewState
+import com.kreitai.orangebikes.core.view.BaseViewState
 
-abstract class SmartBikeViewModel(
+abstract class SmartBikeViewModel<T : BaseViewState>(
     private val stateHolder: StateHolder,
     protected val dispatcher: StationsDispatcher
 ) :
     ViewModel() {
 
-    fun getRenderedState(): LiveData<StationsViewState> {
-        return Transformations.map(stateHolder.getAppState()) { appState ->
-            preRender(appState).also { stationsViewState: StationsViewState? ->
-                appState.error?.let { stationsViewState?.error = it }
+    val renderedState = MediatorLiveData<T>().apply {
+        this.addSource(
+            Transformations.map(stateHolder.getAppState()) { appState ->
+                preRender(appState).also { viewState: T? ->
+                    appState.error?.let { viewState?.error = it }
+                }
             }
+        ) {
+            value = it
         }
     }
 
-    abstract fun preRender(appState: AppState): StationsViewState?
+    abstract fun preRender(appState: AppState): T?
 
     fun retryLastAction() {
         dispatcher.retryLastAction()

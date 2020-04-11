@@ -25,5 +25,5 @@
 package com.kreitai.orangebikes.core.view
 
 abstract class BaseViewState(
-    open val error: String? = null
+    var error: String? = null
 )

@@ -24,6 +24,7 @@
 
 package com.kreitai.orangebikes.map.presentation
 
+import com.google.android.gms.maps.model.LatLng
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
 import com.kreitai.orangebikes.core.domain.action.StationsAction
@@ -38,24 +39,27 @@ class StationMapVm(
     dispatcher: StationsDispatcher,
     private val localization: Localization
 ) :
-    SmartBikeViewModel(stateHolder, dispatcher) {
+    SmartBikeViewModel<StationsViewState>(stateHolder, dispatcher) {
 
     override fun preRender(appState: AppState): StationsViewState? {
         return StationsViewState(
             appState.isLoading,
-            appState.stations?.filter { station -> station.latitude != null && station.longitude != null }?.map {
-                StationItem(
-                    localization.localizeStationName(it.englishName, it.mandarinName),
-                    it.latitude ?: 0.0,
-                    it.longitude ?: 0.0,
-                    localization.localize(R.string.available_bikes, it.availableSpaces),
-                    when (it.ratio) {
-                        0.0 -> StationItem.StationState.EMPTY
-                        in 0.0..0.1 -> StationItem.StationState.LOW
-                        else -> StationItem.StationState.MANY
-                    }
-                )
-            },
+            appState.stations?.filter { station -> station.latitude != null && station.longitude != null }
+                ?.map {
+                    StationItem(
+                        localization.localizeStationName(it.englishName, it.mandarinName),
+                        LatLng(
+                            it.latitude ?: 0.0,
+                            it.longitude ?: 0.0
+                        ),
+                        localization.localize(R.string.available_bikes, it.availableSpaces),
+                        when (it.ratio) {
+                            0.0 -> StationItem.StationState.EMPTY
+                            in 0.0..0.1 -> StationItem.StationState.LOW
+                            else -> StationItem.StationState.MANY
+                        }
+                    )
+                },
             error = if (!appState.isLoading && appState.stations.isNullOrEmpty()) "No more unique stations!" else null
         )
     }
