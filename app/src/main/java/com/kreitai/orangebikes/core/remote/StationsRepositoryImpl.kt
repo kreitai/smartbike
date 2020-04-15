@@ -25,43 +25,21 @@
 package com.kreitai.orangebikes.core.remote
 
 import com.kreitai.orangebikes.core.domain.StationsResult
-import com.kreitai.orangebikes.core.remote.model.Station
-import java.nio.charset.Charset
+import com.kreitai.orangebikes.core.remote.model.StationList
 
-class StationsRepositoryImpl constructor(private val serviceProvider: ServiceProvider) :
-    StationsRepository {
+class StationsRepositoryImpl constructor(serviceProvider: ServiceProvider) :
+    SmartBikeRemoteRepository<StationList>(serviceProvider), StationsRepository {
+
+    override fun getDeferredResponseAsync(serviceProvider: ServiceProvider) =
+        serviceProvider.service.getStationsAsync("en")
 
     override suspend fun getStations(): StationsResult {
-        abortFetch()
-        val response = doGetStations()
+        val response = fetchData()
         return if (response is NetworkResult.Success) {
-            StationsResult.Success(response.data)
+            StationsResult.Success(response.data.stations)
         } else {
             StationsResult.Failure(response.toString())
         }
     }
 
-    private suspend fun doGetStations(): NetworkResult<List<Station>?> {
-        val response = serviceProvider.service.getStationsAsync("en").await()
-        if (response.isSuccessful) {
-            val stationsResponse = response.body()
-            val data = stationsResponse?.stations
-            return if (data.isNullOrEmpty()) {
-                NetworkResult.Failure(
-                    "Failed to retrieve result."
-                )
-            } else {
-                NetworkResult.Success(data)
-            }
-        } else {
-            return NetworkResult.Failure(
-                response.errorBody()?.bytes()?.toString(Charset.forName("UTF-8"))
-                    ?: "Failed to retrieve result."
-            )
-        }
-    }
-
-    private fun abortFetch() {
-        serviceProvider.cancelAllRequests()
-    }
 }
