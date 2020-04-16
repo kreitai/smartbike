@@ -25,6 +25,7 @@
 package com.kreitai.orangebikes.core.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -32,14 +33,20 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.state.StateHolder
 import org.koin.android.ext.android.inject
+
 
 class MainActivity : AppCompatActivity() {
 
     private val stateHolder: StateHolder by inject()
     private lateinit var navController: NavController
+    private var adView: AdView? = null
 
     override fun onSupportNavigateUp() = navController.navigateUp()
 
@@ -51,6 +58,21 @@ class MainActivity : AppCompatActivity() {
             this,
             R.id.nav_host_fragment
         )
+        MobileAds.initialize(
+            this, getString(R.string.admob_app_id)
+        )
+
+        val testDeviceIds = listOf(getString(R.string.test_device_id))
+        val configuration =
+            RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+        MobileAds.setRequestConfiguration(configuration)
+        adView = findViewById(R.id.adView)
+        val adRequest: AdRequest = AdRequest.Builder().build()
+        if (!adRequest.isTestDevice(this)) {
+            Log.e(AD_MOB, "Could not initialize a test ad device.")
+        }
+        adView?.loadAd(adRequest)
+
     }
 
     fun setupToolbar(toolbar: Toolbar, action: ActionBar.() -> Unit = {}) {
@@ -69,5 +91,9 @@ class MainActivity : AppCompatActivity() {
             stateHolder.resetState()
         }
         super.onStop()
+    }
+
+    companion object {
+        private const val AD_MOB = "AdMob"
     }
 }
