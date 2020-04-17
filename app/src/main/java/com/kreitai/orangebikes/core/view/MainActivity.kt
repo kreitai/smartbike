@@ -37,6 +37,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
+import com.kreitai.orangebikes.BuildConfig
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.state.StateHolder
 import org.koin.android.ext.android.inject
@@ -61,11 +62,12 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(
             this, getString(R.string.admob_app_id)
         )
-
-        val testDeviceIds = listOf(getString(R.string.test_device_id))
-        val configuration =
-            RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
-        MobileAds.setRequestConfiguration(configuration)
+        if (!BuildConfig.DEBUG) {
+            val testDeviceIds = listOf(getString(R.string.test_device_id))
+            val configuration =
+                RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+            MobileAds.setRequestConfiguration(configuration)
+        }
         adView = findViewById(R.id.adView)
         val adRequest: AdRequest = AdRequest.Builder().build()
         if (!adRequest.isTestDevice(this)) {
