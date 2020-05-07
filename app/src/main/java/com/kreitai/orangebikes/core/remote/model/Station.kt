@@ -28,9 +28,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Station(
     @SerializedName("lat")
-    val latitude: Double?,
+    val latitude: String?,
     @SerializedName("lng")
-    val longitude: Double?,
+    val longitude: String?,
     @SerializedName("available_spaces")
     val availableSpaces: Int?,
     @SerializedName("empty_spaces")
@@ -44,25 +44,3 @@ data class Station(
 ) {
     val ratio get() = (this.availableSpaces?.div((this.emptySpaces ?: 1).toDouble())) as Double
 }
-/*{
-         "country_code":"00",
-         "area_code":"00",
-         "type":1,
-         "status":1,
-         "station_no":"0002",
-         "name_tw":"捷運國父紀念館站(2號出口)",
-         "district_tw":"大安區",
-         "address_tw":"忠孝東路四段/光復南路口(西南側)",
-         "parking_spaces":48,
-         "available_spaces":5,
-         "empty_spaces":42,
-         "forbidden_spaces":0,
-         "lat":"25.041254",
-         "lng":"121.55742",
-         "img":"/images/station/default.jpg",
-         "updated_at":"2019-10-25 15:58:04",
-         "time":"2019-10-25 15:57:32",
-         "name_en":"MRT S.Y.S Memorial Hall Stataion(Exit 2.)",
-         "district_en":"Daan Dist.",
-         "address_en":"Sec,4. Zhongxiao E.Rd/GuangFu S. Rd"
-      },*/

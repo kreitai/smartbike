@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
 import com.kreitai.orangebikes.core.domain.action.StationsAction
+import com.kreitai.orangebikes.core.remote.model.Station
 import com.kreitai.orangebikes.core.state.AppState
 import com.kreitai.orangebikes.core.state.StateHolder
 import com.kreitai.orangebikes.core.view.StationsViewState
@@ -44,13 +45,24 @@ class StationMapVm(
     override fun preRender(appState: AppState): StationsViewState? {
         return StationsViewState(
             appState.isLoading,
-            appState.stations?.filter { station -> station.latitude != null && station.longitude != null }
+            appState.stations?.filter(fun(station: Station): Boolean {
+                if (station.latitude.isNullOrEmpty() || station.longitude.isNullOrEmpty()) {
+                    return false
+                }
+                try {
+                    station.latitude.toDouble()
+                    station.longitude.toDouble()
+                } catch (e: NumberFormatException) {
+                    return false
+                }
+                return true
+            })
                 ?.map {
                     StationItem(
                         localization.localizeStationName(it.englishName, it.mandarinName),
                         LatLng(
-                            it.latitude ?: 0.0,
-                            it.longitude ?: 0.0
+                            it.latitude?.toDouble() ?: 0.0,
+                            it.longitude?.toDouble() ?: 0.0
                         ),
                         localization.localize(R.string.available_bikes, it.availableSpaces),
                         when (it.ratio) {
