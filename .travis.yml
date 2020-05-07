@@ -16,6 +16,6 @@ before_install:
 script:
   - ./gradlew buildCi testCiUnitTestCoverage
 after_success:
-  - mv app/build/reports/jacoco/testDebugUnitTestCoverage app/build/reports/jacoco/jacocoTestDebugUnitTestReport
+  - mv app/build/reports/jacoco/testCiUnitTestCoverage app/build/reports/jacoco/jacocoTestDebugUnitTestReport
   - mv app/build/reports/jacoco/jacocoTestDebugUnitTestReport/testDebugUnitTestCoverage.xml app/build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml
   - bash <(curl -s https://codecov.io/bash)
