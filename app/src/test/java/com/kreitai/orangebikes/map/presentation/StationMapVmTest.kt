@@ -51,7 +51,7 @@ class StationMapVmTest : MviTest() {
     private var viewStateObserver = mock<Observer<StationsViewState>> {}
     @Before
     fun setup() {
-        stationMapVm.getRenderedState().observeForever(viewStateObserver)
+        stationMapVm.renderedState.observeForever(viewStateObserver)
         stateHolder.resetState()
     }
 
