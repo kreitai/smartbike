@@ -53,9 +53,9 @@ android {
     signingConfigs {
         release {
             storeFile rootProject.file('upload.jks')
-            keyAlias "${kreitai_key_alias}"
-            storePassword "${kreitai_store_password}"
-            keyPassword "${kreitai_key_password}"
+            keyAlias project.hasProperty('kreitai_key_alias') ? "${kreitai_key_alias}" : "dummy"
+            storePassword project.hasProperty('kreitai_store_password') ? "${kreitai_store_password}" : "dummy"
+            keyPassword project.hasProperty('kreitai_key_password') ? "${kreitai_key_password}" : "dummy"
         }
     }
     buildTypes {
