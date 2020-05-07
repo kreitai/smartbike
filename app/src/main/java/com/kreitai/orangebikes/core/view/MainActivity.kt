@@ -60,21 +60,21 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_host_fragment
         )
         MobileAds.initialize(
-            this, getString(R.string.admob_app_id)
-        )
-        if (!BuildConfig.DEBUG) {
-            val testDeviceIds = listOf(getString(R.string.test_device_id))
-            val configuration =
-                RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
-            MobileAds.setRequestConfiguration(configuration)
+            this
+        ) {
+            if (!BuildConfig.DEBUG) {
+                val testDeviceIds = listOf(getString(R.string.test_device_id))
+                val configuration =
+                    RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+                MobileAds.setRequestConfiguration(configuration)
+            }
+            adView = findViewById(R.id.adView)
+            val adRequest: AdRequest = AdRequest.Builder().build()
+            if (!adRequest.isTestDevice(this)) {
+                Log.e(AD_MOB, "Could not initialize a test ad device.")
+            }
+            adView?.loadAd(adRequest)
         }
-        adView = findViewById(R.id.adView)
-        val adRequest: AdRequest = AdRequest.Builder().build()
-        if (!adRequest.isTestDevice(this)) {
-            Log.e(AD_MOB, "Could not initialize a test ad device.")
-        }
-        adView?.loadAd(adRequest)
-
     }
 
     fun setupToolbar(toolbar: Toolbar, action: ActionBar.() -> Unit = {}) {
