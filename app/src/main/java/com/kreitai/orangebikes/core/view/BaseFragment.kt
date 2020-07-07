@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,6 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : Vie
     protected abstract val toolbarResId: Int
     protected abstract val toolbarTitle: CharSequence
     protected open val toolbarTitleGravity = Gravity.CENTER
-    protected open val toolbarShowBackButton = true
     private val dialogController: DialogController by inject { parametersOf(this@BaseFragment) }
 
     private var toolbar: Toolbar? = null
@@ -55,7 +54,7 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : Vie
 
         view.findViewById<Toolbar>(toolbarResId)?.run {
             toolbar = this
-            setupToolbar(toolbarShowBackButton)
+            setupToolbar()
         }
 
         getViewModel().renderedState
@@ -77,22 +76,19 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : Vie
             })
     }
 
-    private fun setupToolbar(toolbarShowBackButton: Boolean) {
+    private fun setupToolbar() {
 
-        if (this.toolbar == null) return
-        val toolbar: Toolbar = this.toolbar!!
+        this.toolbar?.let {
+            val toolbar: Toolbar = it
 
-        val title = toolbar.findViewById<TextView>(R.id.toolbar_title)
+            val title = toolbar.findViewById<TextView>(R.id.toolbar_title)
 
-        val params = title?.layoutParams as Toolbar.LayoutParams
-        params.gravity = toolbarTitleGravity
-        title.layoutParams = params
+            val params = title?.layoutParams as Toolbar.LayoutParams
+            params.gravity = toolbarTitleGravity
+            title.layoutParams = params
 
-        val mainActivity = activity as MainActivity
-        mainActivity.setupToolbar(toolbar) {
-            setDisplayShowTitleEnabled(false)
-            setDisplayHomeAsUpEnabled(toolbarShowBackButton)
-            title.text = toolbarTitle
+            val mainActivity = activity as MainActivity
+            mainActivity.setupToolbar(toolbar)
         }
     }
 

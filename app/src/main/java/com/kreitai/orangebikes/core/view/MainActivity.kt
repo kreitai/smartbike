@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.kreitai.orangebikes.core.view
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
@@ -77,15 +76,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setupToolbar(toolbar: Toolbar, action: ActionBar.() -> Unit = {}) {
+    fun setupToolbar(toolbar: Toolbar) {
         setSupportActionBar(toolbar)
         val topLevelDestinations = HashSet<Int>()
-        //topLevelDestinations.add(R.id.login_fragment)
+        topLevelDestinations.add(R.id.stationsFragment)
         val appBarConfiguration = AppBarConfiguration.Builder(topLevelDestinations).build()
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
-        supportActionBar?.run {
-            action()
-        }
     }
 
     override fun onStop() {
