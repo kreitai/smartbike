@@ -67,7 +67,6 @@ object ServiceFactory {
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
-            .followRedirects(false)
             .dispatcher(dispatcher)
 
         return builder.build()
