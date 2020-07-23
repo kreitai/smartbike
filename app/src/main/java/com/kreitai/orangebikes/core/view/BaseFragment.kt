@@ -26,10 +26,7 @@ package com.kreitai.orangebikes.core.view
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -42,20 +39,10 @@ import org.koin.core.parameter.parametersOf
 abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : ViewDataBinding> :
     DataBindingFragment<VIEWMODEL, VIEWBINDING>() {
 
-    protected abstract val toolbarResId: Int
-    protected abstract val toolbarTitle: CharSequence
-    protected open val toolbarTitleGravity = Gravity.CENTER
     private val dialogController: DialogController by inject { parametersOf(this@BaseFragment) }
-
-    private var toolbar: Toolbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        view.findViewById<Toolbar>(toolbarResId)?.run {
-            toolbar = this
-            setupToolbar()
-        }
 
         getViewModel().renderedState
             .observe(viewLifecycleOwner, Observer { stationsViewState ->
@@ -74,22 +61,6 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : Vie
                     )
                 }
             })
-    }
-
-    private fun setupToolbar() {
-
-        this.toolbar?.let {
-            val toolbar: Toolbar = it
-
-            val title = toolbar.findViewById<TextView>(R.id.toolbar_title)
-
-            val params = title?.layoutParams as Toolbar.LayoutParams
-            params.gravity = toolbarTitleGravity
-            title.layoutParams = params
-
-            val mainActivity = activity as MainActivity
-            mainActivity.setupToolbar(toolbar)
-        }
     }
 
 }

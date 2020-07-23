@@ -22,12 +22,7 @@
   ~ SOFTWARE.
   -->
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
-    android:opacity="opaque"
-    android:paddingLeft="20dp"
-    android:paddingTop="20dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="20dp">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item>
         <shape>

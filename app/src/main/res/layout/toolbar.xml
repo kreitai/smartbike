@@ -2,7 +2,7 @@
 <!--
   ~ MIT License
   ~
-  ~ Copyright (c) 2019 Kreitai OÜ
+  ~ Copyright (c) 2020 Kreitai OÜ
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,5 @@
   -->
 
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/actionBarSize"
-    app:contentInsetEnd="0dp"
-    app:contentInsetLeft="0dp"
-    app:contentInsetRight="0dp"
-    app:contentInsetStart="0dp">
-
-    <TextView
-        android:id="@+id/toolbar_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        tools:text="Stations" />
-</androidx.appcompat.widget.Toolbar>
+    android:layout_height="?attr/actionBarSize" />

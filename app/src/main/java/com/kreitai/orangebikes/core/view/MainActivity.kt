@@ -39,6 +39,7 @@ import com.google.android.gms.ads.RequestConfiguration
 import com.kreitai.orangebikes.BuildConfig
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.state.StateHolder
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
@@ -74,9 +75,10 @@ class MainActivity : AppCompatActivity() {
             }
             adView?.loadAd(adRequest)
         }
+        setupToolbar(toolbar as Toolbar)
     }
 
-    fun setupToolbar(toolbar: Toolbar) {
+    private fun setupToolbar(toolbar: Toolbar) {
         setSupportActionBar(toolbar)
         val topLevelDestinations = HashSet<Int>()
         topLevelDestinations.add(R.id.stationsFragment)

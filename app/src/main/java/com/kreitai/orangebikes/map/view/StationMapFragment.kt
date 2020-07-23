@@ -74,10 +74,6 @@ class StationMapFragment :
     private var permissionDenied: Boolean = false
     private var googleMap: GoogleMap? = null
 
-    override val toolbarResId: Int
-        get() = R.id.stations_toolbar
-    override val toolbarTitle: CharSequence
-        get() = getString(R.string.stations_title)
     override val layoutResource: Int
         get() = R.layout.fragment_station_map
 
