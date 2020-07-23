@@ -1,7 +1,7 @@
 <!--
   ~ MIT License
   ~
-  ~ Copyright (c) 2019 Kreitai OÜ
+  ~ Copyright (c) 2020 Kreitai OÜ
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
     <string name="banner_ad_unit_id" translatable="false">dummy</string>
     <string name="test_device_id" translatable="false">dummy</string>
 
-    <string name="app_name">Orange Bikes</string>
+    <string name="app_name">Taipei Bikes</string>
 
     <string name="stations_title">Stations</string>
 
