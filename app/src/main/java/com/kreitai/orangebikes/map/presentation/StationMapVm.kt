@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.kreitai.orangebikes.map.presentation
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
@@ -34,6 +35,10 @@ import com.kreitai.orangebikes.core.state.StateHolder
 import com.kreitai.orangebikes.core.view.StationsViewState
 import com.kreitai.orangebikes.core.viewmodel.Localization
 import com.kreitai.orangebikes.core.viewmodel.SmartBikeViewModel
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class StationMapVm(
     stateHolder: StateHolder,
@@ -78,6 +83,37 @@ class StationMapVm(
 
     fun fetchStations() {
         dispatcher.nextAction.value = StationsAction.GetStationsAction
+    }
+
+    fun findNearestStation(
+        event: Location,
+        stations: List<StationItem>?
+    ): LatLng? {
+        if (stations.isNullOrEmpty()) {
+            return null
+        }
+
+        val lat = event.latitude
+        val lng = event.longitude
+        val r = 6371 // radius of earth in km
+        val distances = DoubleArray(stations.size)
+        var closest = -1
+        for (i in stations.indices) {
+            val mlat = stations[i].latLng.latitude
+            val mlng = stations[i].latLng.longitude
+            val dLat = Math.toRadians(mlat - lat)
+            val dLong = Math.toRadians(mlng - lng)
+            val a = sin(dLat / 2) * sin(dLat / 2) +
+                    cos(Math.toRadians(lat)) * cos(Math.toRadians(lat)) * sin(dLong / 2) * sin(dLong / 2)
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            val d = r * c
+            distances[i] = d
+            if (closest == -1 || d < distances[closest]) {
+                closest = i
+            }
+        }
+
+        return stations[closest].latLng
     }
 
 }

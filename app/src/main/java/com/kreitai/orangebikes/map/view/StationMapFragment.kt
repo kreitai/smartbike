@@ -32,17 +32,22 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.kreitai.orangebikes.R
@@ -188,6 +193,49 @@ class StationMapFragment :
         ) {
             googleMap?.isMyLocationEnabled = true
             val locationResult: Task<Location?> = fusedLocationClient.lastLocation
+            val request: LocationRequest = LocationRequest.create()
+                .setInterval(1000)
+                //.setFastestInterval(16) // 16ms = 60fps
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            val locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult?) {
+                    locationResult ?: return
+                    val location = locationResult.lastLocation
+                    val stations = getViewModel().renderedState.value?.stations
+                    location?.let {
+                        getViewModel().findNearestStation(it, stations)
+                            ?.let { stationLatLng: LatLng ->
+                                fusedLocationClient.removeLocationUpdates(this)
+
+                                val builder: LatLngBounds.Builder = LatLngBounds.Builder()
+                                builder.include(LatLng(location.latitude, location.longitude))
+                                builder.include(stationLatLng)
+
+                                val bounds: LatLngBounds = builder.build()
+
+                                val width = resources.displayMetrics.widthPixels
+                                val height = resources.displayMetrics.heightPixels
+                                val padding = (width * 0.20).toInt()
+                                googleMap?.let { map: GoogleMap ->
+                                    map.moveCamera(
+                                        CameraUpdateFactory.newLatLngBounds(
+                                            bounds,
+                                            width,
+                                            height,
+                                            padding
+                                        )
+                                    )
+                                }
+                            }
+                    }
+                }
+            }
+
+            fusedLocationClient.requestLocationUpdates(
+                request,
+                locationCallback,
+                Looper.getMainLooper()
+            )
             locationResult.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Set the map's camera position to the current location of the device.
