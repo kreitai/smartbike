@@ -25,6 +25,7 @@
 package com.kreitai.orangebikes.map.presentation
 
 import android.location.Location
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
@@ -46,6 +47,7 @@ class StationMapVm(
     private val localization: Localization
 ) :
     SmartBikeViewModel<StationsViewState>(stateHolder, dispatcher) {
+    val isWalkingMode = MutableLiveData<Boolean>(true)
 
     override fun preRender(appState: AppState): StationsViewState? {
         return StationsViewState(
@@ -116,4 +118,7 @@ class StationMapVm(
         return stations[closest].latLng
     }
 
+    fun switchMode() {
+        isWalkingMode.value?.let { isWalkingMode.value = !it }
+    }
 }

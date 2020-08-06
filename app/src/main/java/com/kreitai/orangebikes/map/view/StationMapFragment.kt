@@ -35,6 +35,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -72,6 +73,8 @@ class StationMapFragment :
         private const val LOCATION_PERMISSION_REQUEST_CODE = 999
     }
 
+    private var isUpdatingContinuously: Boolean = false
+    private lateinit var locationCallback: LocationCallback
     private var bikeBitmapMany: Bitmap? = null
     private var bikeBitmapLow: Bitmap? = null
     private var bikeBitmapEmpty: Bitmap? = null
@@ -90,6 +93,13 @@ class StationMapFragment :
     ) {
         viewBinding.view = this
         viewBinding.vm = viewModel
+        viewModel.isWalkingMode.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                stopContinuousLocationUpdates()
+            } else {
+                requestLocationUpdate(isContinuous = true)
+            }
+        })
     }
 
     private lateinit var mapView: MapView
@@ -98,12 +108,52 @@ class StationMapFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                val location = locationResult.lastLocation
+                val stations = getViewModel().renderedState.value?.stations
+                location?.let {
+                    getViewModel().findNearestStation(it, stations)
+                        ?.let { stationLatLng: LatLng ->
+                            if (!isUpdatingContinuously)
+                                stopContinuousLocationUpdates()
+
+                            val builder: LatLngBounds.Builder = LatLngBounds.Builder()
+                            builder.include(LatLng(location.latitude, location.longitude))
+                            builder.include(stationLatLng)
+
+                            val bounds: LatLngBounds = builder.build()
+
+                            val width = resources.displayMetrics.widthPixels
+                            val height = resources.displayMetrics.heightPixels
+                            val padding = (width * 0.20).toInt()
+                            googleMap?.let { map: GoogleMap ->
+                                map.moveCamera(
+                                    CameraUpdateFactory.newLatLngBounds(
+                                        bounds,
+                                        width,
+                                        height,
+                                        padding
+                                    )
+                                )
+                            }
+                        }
+                }
+            }
+        }
+
         fusedLocationClient = LocationServices
             .getFusedLocationProviderClient(requireActivity())
 
         bikeBitmapMany = getBitmap(R.drawable.ic_bike_round)
         bikeBitmapLow = getBitmap(R.drawable.ic_bike_round_low)
         bikeBitmapEmpty = getBitmap(R.drawable.ic_bike_round_empty)
+    }
+
+    private fun stopContinuousLocationUpdates() {
+        isUpdatingContinuously = false
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     private fun getBitmap(iconId: Int): Bitmap? {
@@ -193,49 +243,7 @@ class StationMapFragment :
         ) {
             googleMap?.isMyLocationEnabled = true
             val locationResult: Task<Location?> = fusedLocationClient.lastLocation
-            val request: LocationRequest = LocationRequest.create()
-                .setInterval(1000)
-                //.setFastestInterval(16) // 16ms = 60fps
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            val locationCallback = object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult?) {
-                    locationResult ?: return
-                    val location = locationResult.lastLocation
-                    val stations = getViewModel().renderedState.value?.stations
-                    location?.let {
-                        getViewModel().findNearestStation(it, stations)
-                            ?.let { stationLatLng: LatLng ->
-                                fusedLocationClient.removeLocationUpdates(this)
-
-                                val builder: LatLngBounds.Builder = LatLngBounds.Builder()
-                                builder.include(LatLng(location.latitude, location.longitude))
-                                builder.include(stationLatLng)
-
-                                val bounds: LatLngBounds = builder.build()
-
-                                val width = resources.displayMetrics.widthPixels
-                                val height = resources.displayMetrics.heightPixels
-                                val padding = (width * 0.20).toInt()
-                                googleMap?.let { map: GoogleMap ->
-                                    map.moveCamera(
-                                        CameraUpdateFactory.newLatLngBounds(
-                                            bounds,
-                                            width,
-                                            height,
-                                            padding
-                                        )
-                                    )
-                                }
-                            }
-                    }
-                }
-            }
-
-            fusedLocationClient.requestLocationUpdates(
-                request,
-                locationCallback,
-                Looper.getMainLooper()
-            )
+            requestLocationUpdate(isContinuous = false)
             locationResult.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Set the map's camera position to the current location of the device.
@@ -262,6 +270,30 @@ class StationMapFragment :
             val taipei = LatLng(25.033, 121.52)
             googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(taipei, INITIAL_ZOOM))
         }
+    }
+
+    private fun requestLocationUpdate(isContinuous: Boolean) {
+        isUpdatingContinuously = isContinuous
+        val request: LocationRequest = LocationRequest.create()
+            .setInterval(1000)
+            .setFastestInterval(16) // 16ms = 60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient.requestLocationUpdates(
+            request,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
