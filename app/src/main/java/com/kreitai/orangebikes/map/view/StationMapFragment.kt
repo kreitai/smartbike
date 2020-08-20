@@ -71,6 +71,8 @@ class StationMapFragment :
         private const val INITIAL_ZOOM = 17.0f
         private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 999
+        private const val TAIPEI_LAT = 25.033
+        private const val TAIPEI_LNG = 121.52
     }
 
     private var isUpdatingContinuously: Boolean = false
@@ -249,8 +251,8 @@ class StationMapFragment :
                     // Set the map's camera position to the current location of the device.
                     val location = task.result
                     val currentLatLng = LatLng(
-                        location?.latitude ?: 25.033,
-                        location?.longitude ?: 121.52
+                        location?.latitude ?: TAIPEI_LAT,
+                        location?.longitude ?: TAIPEI_LNG
                     )
                     googleMap?.moveCamera(
                         CameraUpdateFactory.newLatLngZoom(
@@ -267,7 +269,7 @@ class StationMapFragment :
                 requireActivity() as AppCompatActivity?, LOCATION_PERMISSION_REQUEST_CODE,
                 Manifest.permission.ACCESS_FINE_LOCATION, true
             )
-            val taipei = LatLng(25.033, 121.52)
+            val taipei = LatLng(TAIPEI_LAT, TAIPEI_LNG)
             googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(taipei, INITIAL_ZOOM))
         }
     }

@@ -42,4 +42,7 @@
     <string name="location_permission_denied">Location permission was denied</string>
     <string name="permission_required_toast">Location permission is required</string>
     <string name="permission_rationale_location">If you don\'t grant the permission you won\'t be able to see yourself on the map</string>
+    <string name="about_title">About App</string>
+    <string name="toggle_mode">Toggle Mode</string>
+    <string name="app_version">App version</string>
 </resources>

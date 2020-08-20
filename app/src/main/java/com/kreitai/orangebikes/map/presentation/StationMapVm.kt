@@ -118,7 +118,11 @@ class StationMapVm(
         return stations[closest].latLng
     }
 
-    fun switchMode() {
+    /**
+     * Toggle camera mode between walking (freehand pan & zoom) and cycling (camera automatically follows
+     * user's location and always keeps the user and the nearest station positions in the map frame).
+     */
+    fun toggleMode() {
         isWalkingMode.value?.let { isWalkingMode.value = !it }
     }
 }

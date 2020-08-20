@@ -22,31 +22,21 @@
  * SOFTWARE.
  */
 
-package com.kreitai.orangebikes.core.injection
+package com.kreitai.orangebikes.map.presentation
 
-import android.content.res.Resources
-import com.kreitai.orangebikes.core.viewmodel.Localization
-import com.kreitai.orangebikes.core.viewmodel.LocalizationImpl
-import com.kreitai.orangebikes.map.presentation.AboutVm
-import com.kreitai.orangebikes.map.presentation.StationMapVm
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.parameter.parametersOf
-import org.koin.dsl.module
+import com.kreitai.orangebikes.core.dispatcher.StationsDispatcher
+import com.kreitai.orangebikes.core.state.AppState
+import com.kreitai.orangebikes.core.state.StateHolder
+import com.kreitai.orangebikes.core.view.StationsViewState
+import com.kreitai.orangebikes.core.viewmodel.SmartBikeViewModel
 
-val presentationModule = module {
-
-    single { (resources: Resources) -> LocalizationImpl(get(), resources) as Localization }
-    viewModel { (resources: Resources) ->
-        StationMapVm(
-            get(),
-            get(),
-            get { parametersOf(resources) })
-    }
-    viewModel {
-        AboutVm(
-            get(),
-            get()
-        )
+class AboutVm(
+    stateHolder: StateHolder,
+    dispatcher: StationsDispatcher
+) :
+    SmartBikeViewModel<StationsViewState>(stateHolder, dispatcher) {
+    override fun preRender(appState: AppState): StationsViewState? {
+        return StationsViewState(false, emptyList(), null)
     }
 
 }

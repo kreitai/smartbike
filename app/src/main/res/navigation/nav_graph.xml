@@ -32,4 +32,9 @@
         android:id="@+id/stationsFragment"
         android:name="com.kreitai.orangebikes.map.view.StationMapFragment"
         android:label="Stations" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.kreitai.orangebikes.about.AboutFragment"
+        android:label="About" />
 </navigation>

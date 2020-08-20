@@ -26,16 +26,20 @@ package com.kreitai.orangebikes.core.view
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.material.navigation.NavigationView
 import com.kreitai.orangebikes.BuildConfig
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.state.StateHolder
@@ -80,10 +84,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupToolbar(toolbar: Toolbar) {
         setSupportActionBar(toolbar)
-        val topLevelDestinations = HashSet<Int>()
-        topLevelDestinations.add(R.id.stationsFragment)
-        val appBarConfiguration = AppBarConfiguration.Builder(topLevelDestinations).build()
+        toolbar.setNavigationOnClickListener { drawer_layout.openDrawer(GravityCompat.START) }
+        val appBarConfiguration =
+            AppBarConfiguration.Builder(navController.graph)
+                .setDrawerLayout(findViewById(R.id.drawer_layout)).build()
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+        NavigationUI.setupWithNavController(
+            findViewById<NavigationView>(R.id.nav_view),
+            navController
+        )
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
     override fun onStop() {
