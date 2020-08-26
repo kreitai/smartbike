@@ -33,16 +33,16 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -51,6 +51,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
+import com.kreitai.orangebikes.BuildConfig
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.utils.PermissionUtils
 import com.kreitai.orangebikes.core.view.BaseFragment
@@ -62,7 +63,6 @@ import kotlinx.android.synthetic.main.fragment_station_map.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-
 class StationMapFragment :
     BaseFragment<StationMapVm, FragmentStationMapBinding>(),
     OnMapReadyCallback {
@@ -73,8 +73,11 @@ class StationMapFragment :
         private const val LOCATION_PERMISSION_REQUEST_CODE = 999
         private const val TAIPEI_LAT = 25.033
         private const val TAIPEI_LNG = 121.52
+        private const val PADDING_FACTOR = 0.2
     }
 
+    var screenWidth: Int = 0
+    var screenHeight: Int = 0
     private var isUpdatingContinuously: Boolean = false
     private lateinit var locationCallback: LocationCallback
     private var bikeBitmapMany: Bitmap? = null
@@ -83,6 +86,7 @@ class StationMapFragment :
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var permissionDenied: Boolean = false
     private var googleMap: GoogleMap? = null
+    private var adView: AdView? = null
 
     override val layoutResource: Int
         get() = R.layout.fragment_station_map
@@ -95,7 +99,7 @@ class StationMapFragment :
     ) {
         viewBinding.view = this
         viewBinding.vm = viewModel
-        viewModel.isWalkingMode.observe(viewLifecycleOwner, Observer {
+        viewModel.isWalkingMode.observe(viewLifecycleOwner, {
             if (it) {
                 stopContinuousLocationUpdates()
             } else {
@@ -104,12 +108,12 @@ class StationMapFragment :
         })
     }
 
-    private lateinit var mapView: MapView
-
+    private var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        screenWidth = resources.displayMetrics.widthPixels
+        screenHeight = resources.displayMetrics.heightPixels
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
@@ -127,15 +131,13 @@ class StationMapFragment :
 
                             val bounds: LatLngBounds = builder.build()
 
-                            val width = resources.displayMetrics.widthPixels
-                            val height = resources.displayMetrics.heightPixels
-                            val padding = (width * 0.20).toInt()
+                            val padding = (screenWidth * PADDING_FACTOR).toInt()
                             googleMap?.let { map: GoogleMap ->
                                 map.moveCamera(
                                     CameraUpdateFactory.newLatLngBounds(
                                         bounds,
-                                        width,
-                                        height,
+                                        screenWidth,
+                                        screenHeight,
                                         padding
                                     )
                                 )
@@ -181,15 +183,31 @@ class StationMapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        MobileAds.initialize(
+            requireContext()
+        ) {
+            if (!BuildConfig.DEBUG) {
+                val testDeviceIds = listOf(getString(R.string.test_device_id))
+                val configuration =
+                    RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+                MobileAds.setRequestConfiguration(configuration)
+            }
+            adView = view.findViewById(R.id.adView)
+            val adRequest: AdRequest = AdRequest.Builder().build()
+            if (!adRequest.isTestDevice(requireActivity())) {
+                Log.e(javaClass.simpleName, "Could not initialize a test ad device.")
+            }
+            adView?.loadAd(adRequest)
+        }
         var mapViewBundle: Bundle? = null
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
         }
         mapView = map
-        mapView.onCreate(mapViewBundle)
-        mapView.getMapAsync(this)
+        mapView?.onCreate(mapViewBundle)
+        mapView?.getMapAsync(this)
         getViewModel().renderedState
-            .observe(viewLifecycleOwner, Observer { stationsViewState ->
+            .observe(viewLifecycleOwner, { stationsViewState ->
 
                 stationsViewState.stations?.let { stationItems ->
                     drawMarkers(stationItems)
@@ -307,12 +325,12 @@ class StationMapFragment :
             outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle)
         }
 
-        mapView.onSaveInstanceState(mapViewBundle)
+        mapView?.onSaveInstanceState(mapViewBundle)
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
+        mapView?.onResume()
         if (permissionDenied) {
             // Permission was not granted, display error dialog.
             showMissingPermissionError()
@@ -327,27 +345,27 @@ class StationMapFragment :
 
     override fun onStart() {
         super.onStart()
-        mapView.onStart()
+        mapView?.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView.onStop()
+        mapView?.onStop()
     }
 
     override fun onPause() {
-        mapView.onPause()
+        mapView?.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
-        mapView.onDestroy()
+        mapView?.onDestroy()
         super.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        mapView?.onLowMemory()
     }
 
     override fun onRequestPermissionsResult(
