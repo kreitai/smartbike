@@ -43,7 +43,7 @@ android {
         targetSdkVersion 30
         multiDexEnabled true
         versionCode getTimestampString() as Integer
-        versionName "0.9.0"
+        versionName "0.9.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField 'java.lang.String', 'BASE_URL', '"https://apis.youbike.com.tw/api/front/station/"'
     }
