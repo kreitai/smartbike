@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,11 +45,11 @@ class SmartBikeApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        MapsInitializer.initialize(this)
         startKoin {
             androidContext(this@SmartBikeApp)
             modules(listOf(remoteModule, stateModule, presentationModule, uiModule))
             logger(if (!BuildConfig.DEBUG) EmptyLogger() else AndroidLogger())
         }
-        MapsInitializer.initialize(this)
     }
 }

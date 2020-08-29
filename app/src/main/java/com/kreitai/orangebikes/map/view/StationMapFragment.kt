@@ -206,13 +206,6 @@ class StationMapFragment :
         mapView = map
         mapView?.onCreate(mapViewBundle)
         mapView?.getMapAsync(this)
-        getViewModel().renderedState
-            .observe(viewLifecycleOwner, { stationsViewState ->
-
-                stationsViewState.stations?.let { stationItems ->
-                    drawMarkers(stationItems)
-                }
-            })
     }
 
     private fun drawMarkers(stationItems: List<StationItem>) {
