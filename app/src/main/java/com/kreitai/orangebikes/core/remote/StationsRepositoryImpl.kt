@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,13 @@ import com.kreitai.orangebikes.core.remote.model.StationList
 class StationsRepositoryImpl constructor(serviceProvider: ServiceProvider) :
     SmartBikeRemoteRepository<StationList>(serviceProvider), StationsRepository {
 
-    override fun getDeferredResponseAsync(serviceProvider: ServiceProvider) =
-        serviceProvider.service.getStationsAsync("en")
+    private var type: Int = 0
 
-    override suspend fun getStations(): StationsResult {
+    override fun getDeferredResponseAsync(serviceProvider: ServiceProvider) =
+        serviceProvider.service.getStationsAsync("en", type)
+
+    override suspend fun getStations(type: Int): StationsResult {
+        this.type = type
         val response = fetchData()
         return if (response is NetworkResult.Success) {
             StationsResult.Success(response.data.stations)

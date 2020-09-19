@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,6 @@ interface SmartBikeService {
 
     @GET("all")
     fun getStationsAsync(
-        @Query("lang") language: String
+        @Query("lang") language: String, @Query("type") type: Int
     ): Deferred<Response<StationList>>
 }

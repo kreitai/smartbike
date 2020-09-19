@@ -47,7 +47,8 @@ class StationMapVm(
     private val localization: Localization
 ) :
     SmartBikeViewModel<StationsViewState>(stateHolder, dispatcher) {
-    val isWalkingMode = MutableLiveData<Boolean>(true)
+    val isWalkingMode = MutableLiveData(true)
+    val youBikeType = MutableLiveData(1)
 
     override fun preRender(appState: AppState): StationsViewState? {
         return StationsViewState(
@@ -84,7 +85,8 @@ class StationMapVm(
     }
 
     fun fetchStations() {
-        dispatcher.nextAction.value = StationsAction.GetStationsAction
+        dispatcher.nextAction.value =
+            youBikeType.value?.let { StationsAction.GetStationsAction(it) }
     }
 
     fun findNearestStation(
@@ -116,6 +118,14 @@ class StationMapVm(
         }
 
         return stations[closest].latLng
+    }
+
+    /**
+     * Toggle YouBike type - v1/v2
+     */
+    fun toggleBikeType() {
+        youBikeType.value?.let { youBikeType.value = it % 2 + 1 }
+        fetchStations()
     }
 
     /**

@@ -206,12 +206,19 @@ class StationMapFragment :
         mapView = map
         mapView?.onCreate(mapViewBundle)
         mapView?.getMapAsync(this)
+        getViewModel().renderedState.observe(viewLifecycleOwner, {
+            it?.stations?.let { stationItems ->
+                drawMarkers(stationItems)
+            }
+        })
     }
 
     private fun drawMarkers(stationItems: List<StationItem>) {
+        if (googleMap == null) return
         val bitmapDescriptorMany = bikeBitmapMany.toBitmapDescriptor()
         val bitmapDescriptorLow = bikeBitmapLow.toBitmapDescriptor()
         val bitmapDescriptorEmpty = bikeBitmapEmpty.toBitmapDescriptor()
+        googleMap?.clear()
         for (station in stationItems) {
             val bikeIcon = when (station.state) {
                 StationItem.StationState.MANY -> bitmapDescriptorMany

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,5 +28,5 @@ import com.kreitai.orangebikes.core.domain.StationsResult
 
 interface StationsRepository {
 
-    suspend fun getStations(): StationsResult
+    suspend fun getStations(type: Int): StationsResult
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,5 +25,5 @@
 package com.kreitai.orangebikes.core.domain.action
 
 sealed class StationsAction : Action {
-    object GetStationsAction : StationsAction()
+    class GetStationsAction(val youBikeType: Int) : StationsAction()
 }
