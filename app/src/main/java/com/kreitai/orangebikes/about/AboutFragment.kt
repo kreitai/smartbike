@@ -24,6 +24,9 @@
 
 package com.kreitai.orangebikes.about
 
+import android.os.Bundle
+import android.view.View
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.kreitai.orangebikes.BuildConfig
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.view.BaseFragment
@@ -47,5 +50,16 @@ class AboutFragment : BaseFragment<AboutVm, FragmentAboutBinding>() {
         return aboutVm
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val manager = ReviewManagerFactory.create(requireContext())
+        val request = manager.requestReviewFlow()
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val reviewInfo = request.result
+                manager.launchReviewFlow(requireActivity(), reviewInfo)
+            }
+        }
 
+    }
 }

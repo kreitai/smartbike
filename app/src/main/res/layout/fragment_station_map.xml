@@ -77,7 +77,7 @@
             android:layout_margin="16dp"
             android:contentDescription="@string/toggle_mode"
             android:onClick="@{() -> vm.toggleBikeType()}"
-            android:src="@{vm.youBikeType == 1 ? @drawable/ic_one : @drawable/ic_two}"
+            android:src="@{vm.youBikeType == 1 ? @drawable/ic_v1_0 : @drawable/ic_v2_0}"
             app:backgroundTint="@color/colorAccent"
             app:layout_constraintBottom_toTopOf="@id/fabMode"
             app:layout_constraintRight_toRightOf="parent" />
