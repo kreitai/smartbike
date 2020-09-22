@@ -25,6 +25,7 @@
 package com.kreitai.orangebikes.map.view
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -183,22 +184,6 @@ class StationMapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        MobileAds.initialize(
-            requireContext()
-        ) {
-            if (!BuildConfig.DEBUG) {
-                val testDeviceIds = listOf(getString(R.string.test_device_id))
-                val configuration =
-                    RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
-                MobileAds.setRequestConfiguration(configuration)
-            }
-            adView = view.findViewById(R.id.adView)
-            val adRequest: AdRequest = AdRequest.Builder().build()
-            if (!adRequest.isTestDevice(requireActivity())) {
-                Log.e(javaClass.simpleName, "Could not initialize a test ad device.")
-            }
-            adView?.loadAd(adRequest)
-        }
         var mapViewBundle: Bundle? = null
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
@@ -211,6 +196,26 @@ class StationMapFragment :
                 drawMarkers(stationItems)
             }
         })
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        MobileAds.initialize(
+            requireContext()
+        ) {
+            if (!BuildConfig.DEBUG) {
+                val testDeviceIds = listOf(getString(R.string.test_device_id))
+                val configuration =
+                    RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+                MobileAds.setRequestConfiguration(configuration)
+            }
+            adView = view?.findViewById(R.id.adView)
+            val adRequest: AdRequest = AdRequest.Builder().build()
+            if (!adRequest.isTestDevice(requireActivity())) {
+                Log.e(javaClass.simpleName, "Could not initialize a test ad device.")
+            }
+            adView?.loadAd(adRequest)
+        }
     }
 
     private fun drawMarkers(stationItems: List<StationItem>) {
