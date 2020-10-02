@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ MIT License
   ~
   ~ Copyright (c) 2020 Kreitai OÜ
@@ -23,18 +22,19 @@
   ~ SOFTWARE.
   -->
 
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/stationsFragment">
-
-    <fragment
-        android:id="@+id/stationsFragment"
-        android:name="com.kreitai.orangebikes.map.view.StationMapFragment"
-        android:label="@string/stations_title" />
-
-    <fragment
-        android:id="@+id/aboutFragment"
-        android:name="com.kreitai.orangebikes.about.AboutFragment"
-        android:label="@string/about_title" />
-</navigation>
+<resources>
+    <string name="app_name">YouBike 台灣行</string>
+    <string name="stations_title">站點</string>
+    <string name="general_error_dialog_title">發生錯誤</string>
+    <string name="general_error_dialog_button">再試一次</string>
+    <string name="available_bikes">%s輛腳踏車</string>
+    <string name="default_notification_channel_id">站點狀態</string>
+    <string name="channel_name">站點狀態</string>
+    <string name="channel_description">站點狀態變更通知</string>
+    <string name="location_permission_denied">位置權限存取遭拒</string>
+    <string name="permission_required_toast">需要位置許可</string>
+    <string name="permission_rationale_location">若您不授予權限，您將無法在地圖上看到自己</string>
+    <string name="about_title">關於App</string>
+    <string name="toggle_mode">切換模式</string>
+    <string name="app_version">APP版本</string>
+</resources>

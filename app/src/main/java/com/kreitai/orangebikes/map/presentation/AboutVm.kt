@@ -35,7 +35,7 @@ class AboutVm(
     dispatcher: StationsDispatcher
 ) :
     SmartBikeViewModel<StationsViewState>(stateHolder, dispatcher) {
-    override fun preRender(appState: AppState): StationsViewState? {
+    override fun render(appState: AppState): StationsViewState? {
         return StationsViewState(false, emptyList(), null)
     }
 

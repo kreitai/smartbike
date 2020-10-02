@@ -77,6 +77,7 @@ class StationMapFragment :
         private const val PADDING_FACTOR = 0.2
     }
 
+    private var lastCameraPosition: LatLng? = null
     var screenWidth: Int = 0
     var screenHeight: Int = 0
     private var isUpdatingContinuously: Boolean = false
@@ -251,8 +252,12 @@ class StationMapFragment :
     override fun onMapReady(googleMap: GoogleMap?) {
         this.googleMap = googleMap
         googleMap?.setOnCameraIdleListener {
-            getViewModel().renderedState.value?.stations?.let { stationItems ->
-                drawMarkers(stationItems)
+            if (lastCameraPosition != googleMap.cameraPosition.target
+            ) {
+                lastCameraPosition = googleMap.cameraPosition.target
+                getViewModel().renderedState.value?.stations?.let { stationItems ->
+                    drawMarkers(stationItems)
+                }
             }
         }
         enableMyLocation()

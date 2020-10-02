@@ -28,7 +28,6 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.kreitai.orangebikes.R
 import com.kreitai.orangebikes.core.viewmodel.SmartBikeViewModel
@@ -45,16 +44,16 @@ abstract class BaseFragment<VIEWMODEL : SmartBikeViewModel<*>, VIEWBINDING : Vie
         super.onViewCreated(view, savedInstanceState)
 
         getViewModel().renderedState
-            .observe(viewLifecycleOwner, Observer { stationsViewState ->
+            .observe(viewLifecycleOwner, { stationsViewState ->
                 stationsViewState.error?.let {
                     dialogController.showMessage(
                         getString(R.string.general_error_dialog_title),
                         it,
                         getString(R.string.general_error_dialog_button),
-                        DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
+                        { _: DialogInterface, _: Int ->
                             getViewModel().retryLastAction()
                         },
-                        DialogInterface.OnCancelListener {
+                        {
                             getViewModel().resetAppState()
                             findNavController().popBackStack()
                         }

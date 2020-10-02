@@ -50,7 +50,7 @@ class StationMapVm(
     val isWalkingMode = MutableLiveData(true)
     val youBikeType = MutableLiveData(1)
 
-    override fun preRender(appState: AppState): StationsViewState? {
+    override fun render(appState: AppState): StationsViewState? {
         return StationsViewState(
             appState.isLoading,
             appState.stations?.filter(fun(station: Station): Boolean {

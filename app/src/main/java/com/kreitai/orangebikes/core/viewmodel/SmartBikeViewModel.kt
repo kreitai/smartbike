@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Kreitai OÜ
+ * Copyright (c) 2020 Kreitai OÜ
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,16 +32,16 @@ import com.kreitai.orangebikes.core.state.AppState
 import com.kreitai.orangebikes.core.state.StateHolder
 import com.kreitai.orangebikes.core.view.BaseViewState
 
-abstract class SmartBikeViewModel<T : BaseViewState>(
+abstract class SmartBikeViewModel<VIEWSTATE : BaseViewState>(
     private val stateHolder: StateHolder,
     protected val dispatcher: StationsDispatcher
 ) :
     ViewModel() {
 
-    val renderedState = MediatorLiveData<T>().apply {
+    val renderedState = MediatorLiveData<VIEWSTATE>().apply {
         this.addSource(
             Transformations.map(stateHolder.getAppState()) { appState ->
-                preRender(appState).also { viewState: T? ->
+                render(appState).also { viewState: VIEWSTATE? ->
                     appState.error?.let { viewState?.error = it }
                 }
             }
@@ -50,7 +50,7 @@ abstract class SmartBikeViewModel<T : BaseViewState>(
         }
     }
 
-    abstract fun preRender(appState: AppState): T?
+    abstract fun render(appState: AppState): VIEWSTATE?
 
     fun retryLastAction() {
         dispatcher.retryLastAction()
