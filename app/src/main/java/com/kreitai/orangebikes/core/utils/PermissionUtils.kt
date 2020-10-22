@@ -1,112 +1,101 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * MIT License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2020 Kreitai OÜ
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
+package com.kreitai.orangebikes.core.utils
 
-package com.kreitai.orangebikes.core.utils;
-
-import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
-
-import com.kreitai.orangebikes.R;
+import android.Manifest
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.pm.PackageManager
+import android.os.Bundle
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import com.kreitai.orangebikes.R
 
 /**
  * Utility class for access to runtime permissions.
  */
-public abstract class PermissionUtils {
-
+object PermissionUtils {
     /**
      * Requests the fine location permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
      */
-    public static void requestPermission(AppCompatActivity activity, int requestId,
-                                         String permission, boolean finishActivity) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+    fun requestPermission(
+        fragment: Fragment, requestId: Int,
+        permission: String
+    ) {
+        if (fragment.shouldShowRequestPermissionRationale(permission)) {
             // Display a dialog with rationale.
-            PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity)
-                    .show(activity.getSupportFragmentManager(), "dialog");
+            RationaleDialog.newInstance(fragment, requestId)
+                .show(fragment.parentFragmentManager, "dialog")
         } else {
             // Location permission has not been granted yet, request it.
-            ActivityCompat.requestPermissions(activity, new String[]{permission}, requestId);
-
+            fragment.requestPermissions(arrayOf(permission), requestId)
         }
     }
 
     /**
-     * Checks if the result contains a {@link PackageManager#PERMISSION_GRANTED} result for a
+     * Checks if the result contains a [PackageManager.PERMISSION_GRANTED] result for a
      * permission from a runtime permissions request.
      *
      * @see androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
      */
-    public static boolean isPermissionGranted(String[] grantPermissions, int[] grantResults,
-                                              String permission) {
-        for (int i = 0; i < grantPermissions.length; i++) {
-            if (permission.equals(grantPermissions[i])) {
-                return grantResults[i] == PackageManager.PERMISSION_GRANTED;
+    fun isPermissionGranted(
+        grantPermissions: Array<String>, grantResults: IntArray,
+        permission: String
+    ): Boolean {
+        for (i in grantPermissions.indices) {
+            if (permission == grantPermissions[i]) {
+                return grantResults[i] == PackageManager.PERMISSION_GRANTED
             }
         }
-        return false;
+        return false
     }
 
     /**
      * A dialog that displays a permission denied message.
      */
-    public static class PermissionDeniedDialog extends DialogFragment {
-
-        private static final String ARGUMENT_FINISH_ACTIVITY = "finish";
-
-        private boolean mFinishActivity = false;
-
-        /**
-         * Creates a new instance of this dialog and optionally finishes the calling Activity
-         * when the 'Ok' button is clicked.
-         */
-        public static PermissionDeniedDialog newInstance(boolean finishActivity) {
-            Bundle arguments = new Bundle();
-            arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity);
-
-            PermissionDeniedDialog dialog = new PermissionDeniedDialog();
-            dialog.setArguments(arguments);
-            return dialog;
+    class PermissionDeniedDialog : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return AlertDialog.Builder(activity)
+                .setMessage(R.string.location_permission_denied)
+                .setPositiveButton(android.R.string.ok, null)
+                .create()
         }
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            mFinishActivity = getArguments().getBoolean(ARGUMENT_FINISH_ACTIVITY);
+        companion object {
+            private const val ARGUMENT_FINISH_ACTIVITY = "finish"
 
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.location_permission_denied)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create();
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            super.onDismiss(dialog);
-            if (mFinishActivity) {
-                Toast.makeText(getActivity(), R.string.permission_required_toast,
-                        Toast.LENGTH_SHORT).show();
-                getActivity().finish();
+            /**
+             * Creates a new instance of this dialog and optionally finishes the calling Activity
+             * when the 'Ok' button is clicked.
+             */
+            fun newInstance(finishActivity: Boolean): PermissionDeniedDialog {
+                val arguments = Bundle()
+                arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity)
+                val dialog = PermissionDeniedDialog()
+                dialog.arguments = arguments
+                return dialog
             }
         }
     }
@@ -114,72 +103,51 @@ public abstract class PermissionUtils {
     /**
      * A dialog that explains the use of the location permission and requests the necessary
      * permission.
-     * <p>
+     *
+     *
      * The activity should implement
-     * {@link androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback}
+     * [androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback]
      * to handle permit or denial of this permission request.
      */
-    public static class RationaleDialog extends DialogFragment {
+    class RationaleDialog(private val fragment: Fragment) : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val arguments = arguments
+            val requestCode = arguments?.getInt(ARGUMENT_PERMISSION_REQUEST_CODE)
+            return AlertDialog.Builder(activity)
+                .setMessage(R.string.permission_rationale_location)
+                .setPositiveButton(android.R.string.ok) { _, _ -> // After click on Ok, request the permission.
+                    requestCode?.let {
+                        fragment.requestPermissions(
+                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                            it
+                        )
+                    }
 
-        private static final String ARGUMENT_PERMISSION_REQUEST_CODE = "requestCode";
-
-        private static final String ARGUMENT_FINISH_ACTIVITY = "finish";
-
-        private boolean mFinishActivity = false;
-
-        /**
-         * Creates a new instance of a dialog displaying the rationale for the use of the location
-         * permission.
-         * <p>
-         * The permission is requested after clicking 'ok'.
-         *
-         * @param requestCode    Id of the request that is used to request the permission. It is
-         *                       returned to the
-         *                       {@link androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback}.
-         * @param finishActivity Whether the calling Activity should be finished if the dialog is
-         *                       cancelled.
-         */
-        public static RationaleDialog newInstance(int requestCode, boolean finishActivity) {
-            Bundle arguments = new Bundle();
-            arguments.putInt(ARGUMENT_PERMISSION_REQUEST_CODE, requestCode);
-            arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity);
-            RationaleDialog dialog = new RationaleDialog();
-            dialog.setArguments(arguments);
-            return dialog;
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .create()
         }
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Bundle arguments = getArguments();
-            final int requestCode = arguments.getInt(ARGUMENT_PERMISSION_REQUEST_CODE);
-            mFinishActivity = arguments.getBoolean(ARGUMENT_FINISH_ACTIVITY);
+        companion object {
+            private const val ARGUMENT_PERMISSION_REQUEST_CODE = "requestCode"
 
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.permission_rationale_location)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // After click on Ok, request the permission.
-                            ActivityCompat.requestPermissions(getActivity(),
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    requestCode);
-                            // Do not finish the Activity while requesting permission.
-                            mFinishActivity = false;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            super.onDismiss(dialog);
-            if (mFinishActivity) {
-                Toast.makeText(getActivity(),
-                        R.string.permission_required_toast,
-                        Toast.LENGTH_SHORT)
-                        .show();
-                getActivity().finish();
+            /**
+             * Creates a new instance of a dialog displaying the rationale for the use of the location
+             * permission.
+             *
+             *
+             * The permission is requested after clicking 'ok'.
+             *
+             * @param requestCode    Id of the request that is used to request the permission. It is
+             * returned to the
+             * [androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback].
+             */
+            fun newInstance(fragment: Fragment, requestCode: Int): RationaleDialog {
+                val arguments = Bundle()
+                arguments.putInt(ARGUMENT_PERMISSION_REQUEST_CODE, requestCode)
+                val dialog = RationaleDialog(fragment)
+                dialog.arguments = arguments
+                return dialog
             }
         }
     }
