@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ MIT License
   ~
-  ~ Copyright (c) 2019 Kreitai OÜ
+  ~ Copyright (c) 2020 Kreitai OÜ
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -30,22 +29,18 @@
 
         <variable
             name="view"
-            type="com.kreitai.smartbike.map.view.StationMapFragment" />
+            type="com.kreitai.orangebikes.map.view.StationMapFragment" />
 
 
         <variable
             name="vm"
-            type="com.kreitai.smartbike.map.presentation.StationMapVm" />
+            type="com.kreitai.orangebikes.map.presentation.StationMapVm" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/stations_toolbar"
-            layout="@layout/toolbar" />
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -54,20 +49,50 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/stations_toolbar"
+            app:layout_constraintTop_toTopOf="parent"
             app:visible="@{vm.getRenderedState().loading}" />
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="?actionBarSize"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/banner_ad_unit_id"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBikeType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/toggle_mode"
+            android:onClick="@{() -> vm.toggleBikeType()}"
+            android:src="@{vm.youBikeType == 1 ? @drawable/ic_v1_0 : @drawable/ic_v2_0}"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toTopOf="@id/fabMode"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/toggle_mode"
+            android:onClick="@{() -> vm.toggleMode()}"
+            android:src="@{vm.isWalkingMode ? @drawable/ic_bike_white : @drawable/ic_pedestrian_white}"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

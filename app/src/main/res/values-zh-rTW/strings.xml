@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2020 Kreitai OÜ
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<resources>
+    <string name="app_name">YouBike 台灣行</string>
+    <string name="stations_title">站點</string>
+    <string name="general_error_dialog_title">發生錯誤</string>
+    <string name="general_error_dialog_button">再試一次</string>
+    <string name="available_bikes">%s輛腳踏車</string>
+    <string name="default_notification_channel_id">站點狀態</string>
+    <string name="channel_name">站點狀態</string>
+    <string name="channel_description">站點狀態變更通知</string>
+    <string name="location_permission_denied">位置權限存取遭拒</string>
+    <string name="permission_required_toast">需要位置許可</string>
+    <string name="permission_rationale_location">若您不授予權限，您將無法在地圖上看到自己</string>
+    <string name="about_title">關於App</string>
+    <string name="toggle_mode">切換模式</string>
+    <string name="app_version">APP版本</string>
+</resources>
