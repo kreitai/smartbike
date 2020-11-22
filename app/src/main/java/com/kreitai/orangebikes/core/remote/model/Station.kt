@@ -27,20 +27,28 @@ package com.kreitai.orangebikes.core.remote.model
 import com.google.gson.annotations.SerializedName
 
 data class Station(
-    @SerializedName("lat")
+        @SerializedName("lat")
     val latitude: String?,
-    @SerializedName("lng")
+        @SerializedName("lng")
     val longitude: String?,
-    @SerializedName("available_spaces")
+        @SerializedName("available_spaces")
     val availableSpaces: Int?,
-    @SerializedName("empty_spaces")
-    val emptySpaces: Int?,
-    @SerializedName("name_tw")
+        @SerializedName("parking_spaces")
+    val parkingSpaces: Int?,
+        @SerializedName("forbidden_spaces")
+        val forbiddenSpaces: Int?,
+        @SerializedName("name_tw")
     val mandarinName: String,
-    @SerializedName("name_en")
+        @SerializedName("name_en")
     val englishName: String,
-    @SerializedName("img")
+        @SerializedName("img")
     val image: String
 ) {
-    val ratio get() = (this.availableSpaces?.div((this.emptySpaces ?: 1).toDouble())) as Double
+    val ratio: Double
+        get() {
+            if (parkingSpaces?.compareTo(0) == 0){
+                return 0.0;
+            }
+            return (this.availableSpaces?.div((this.parkingSpaces ?: 1 ).toDouble() - (this.forbiddenSpaces ?: 1).toDouble())) as Double
+        }
 }
